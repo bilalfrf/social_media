@@ -1,0 +1,30 @@
+<!-- profile.html -->
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>{{ user.username }}'s Profile</h2>
+        <p>Email: {{ user.email }}</p>
+        <p>Followers: {{ followers_count }}</p>
+        <p>Following: {{ following_count }}</p>
+        <p>Stories: {{ stories_count }}</p>
+        <h3>Followers</h3>
+        <ul>
+            {% for follower in followers %}
+                <li>{{ follower.username }}</li>
+            {% endfor %}
+        </ul>
+        <h3>Following</h3>
+        <ul>
+            {% for following in followings %}
+                <li>{{ following.username }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+

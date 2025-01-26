@@ -1,0 +1,21 @@
+<!-- add_story.html -->
+{% extends "base.html" %}
+
+{% block title %}Add Story{% endblock %}
+
+{% block content %}
+<h2>Add a New Story</h2>
+<form method="POST" action="{{ url_for('main.add_story') }}" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="story_content">Story Content</label>
+        <textarea class="form-control" id="story_content" name="story_content" rows="3" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="story_media">Story Media (Photo or Video)</label>
+        <input type="file" class="form-control-file" id="story_media" name="story_media" accept="image/*,video/*">
+    </div>
+    <button type="submit" class="btn btn-primary">Post Story</button>
+</form>
+{% endblock %}
+
+

@@ -1,0 +1,27 @@
+<!-- user_profile.html -->
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>{{ user.username }}'s Profile</h2>
+        <p>Email: {{ user.email }}</p>
+        <p>Followers: {{ user.followers | length }}</p>
+        <p>Following: {{ user.following | length }}</p>
+
+        {% if current_user.id in user.followers %}
+        <form method="POST" action="{{ url_for('main.unfollow_user', user_id=user._id) }}">
+            <button type="submit" class="btn btn-danger">Unfollow</button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('main.follow_user', user_id=user._id) }}">
+            <button type="submit" class="btn btn-primary">Follow</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

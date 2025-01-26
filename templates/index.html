@@ -1,0 +1,17 @@
+<!-- index.html -->
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to the Social Media App!</h1>
+    <p class="lead">This is a simple social media application built with Flask, MongoDB, and Bootstrap.</p>
+    <hr class="my-4">
+    <p>Login or Signup to get started.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('main.stories') }}" role="button">View Stories</a>
+    <a class="btn btn-secondary btn-lg" href="{{ url_for('main.profiles') }}" role="button">Profiles</a>
+</div>
+{% endblock %}
+
+

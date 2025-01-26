@@ -1,0 +1,214 @@
+<!-- story.html -->
+{% extends "base.html" %}
+
+{% block title %}Stories{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Stories</h2>
+
+        <!-- Form to add a new story -->
+        <form method="POST" action="{{ url_for('main.add_story') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="story_content">Add a new story</label>
+                <textarea class="form-control" id="story_content" name="story_content" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="story_media">Story Media (Photo or Video)</label>
+                <input type="file" class="form-control-file" id="story_media" name="story_media" accept="image/*,video/*">
+            </div>
+            <button type="submit" class="btn btn-primary">Post Story</button>
+        </form>
+
+        <!-- List of stories -->
+        <div class="stories mt-4">
+            {% for story in stories %}
+            <div class="card mb-4" oncontextmenu="showStoryMenu(event, '{{ story._id }}')">
+                <div class="card-body">
+                    <h5 class="card-title">{{ story.username }}</h5>
+                    <p class="card-text">{{ story.content }}</p>
+                    {% if story.media %}
+                    {% if story.media_type == 'image' %}
+                    <img src="{{ url_for('static', filename='uploads/' + story.media) }}" class="img-fluid" alt="Story Media">
+                    {% elif story.media_type == 'video' %}
+                    <video controls class="img-fluid">
+                        <source src="{{ url_for('static', filename='uploads/' + story.media) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    {% endif %}
+                    {% endif %}
+                    <div class="d-flex justify-content-between mt-2">
+                        <div>
+                            <button class="btn btn-success btn-sm" onclick="likeStory('{{ story._id }}')">Like</button>
+                            <button class="btn btn-danger btn-sm" onclick="dislikeStory('{{ story._id }}')">Dislike</button>
+                        </div>
+                        <small id="likes-{{ story._id }}">{{ story.likes }} likes</small>,
+                        <small id="dislikes-{{ story._id }}">{{ story.dislikes }} dislikes</small>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <!-- Comments section -->
+                    <form method="POST" action="{{ url_for('main.add_comment', story_id=story._id) }}">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="comment_content" placeholder="Add a comment" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+                    </form>
+                    <div class="comments mt-2">
+                        {% for comment in story.comments %}
+                        <div class="comment mb-2" oncontextmenu="showCommentMenu(event, '{{ comment._id }}')">
+                            <strong>{{ comment.username }}</strong>:
+                            <p>{{ comment.content }}</p>
+                            <div>
+                                <button class="btn btn-success btn-sm" onclick="likeComment('{{ comment._id }}')">Like</button>
+                                <button class="btn btn-danger btn-sm" onclick="dislikeComment('{{ comment._id }}')">Dislike</button>
+                                <small id="comment-likes-{{ comment._id }}">{{ comment.likes }} likes</small>,
+                                <small id="comment-dislikes-{{ comment._id }}">{{ comment.dislikes }} dislikes</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="story-context-menu" class="context-menu">
+    <button onclick="editStory()">Edit</button>
+</div>
+
+<div id="comment-context-menu" class="context-menu">
+    <button onclick="editComment()">Edit</button>
+</div>
+
+<style>
+.context-menu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+.context-menu button {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background: none;
+    text-align: left;
+}
+.context-menu button:hover {
+    background-color: #f0f0f0;
+}
+</style>
+
+<script>
+let currentStoryId = null;
+let currentCommentId = null;
+
+function showStoryMenu(event, storyId) {
+    event.preventDefault();
+    currentStoryId = storyId;
+    const menu = document.getElementById('story-context-menu');
+    menu.style.display = 'block';
+    menu.style.left = `${event.pageX}px`;
+    menu.style.top = `${event.pageY}px`;
+
+    document.addEventListener('click', hideStoryMenu);
+}
+
+function hideStoryMenu() {
+    const menu = document.getElementById('story-context-menu');
+    menu.style.display = 'none';
+    document.removeEventListener('click', hideStoryMenu);
+}
+
+function showCommentMenu(event, commentId) {
+    event.preventDefault();
+    currentCommentId = commentId;
+    const menu = document.getElementById('comment-context-menu');
+    menu.style.display = 'block';
+    menu.style.left = `${event.pageX}px`;
+    menu.style.top = `${event.pageY}px`;
+
+    document.addEventListener('click', hideCommentMenu);
+}
+
+function hideCommentMenu() {
+    const menu = document.getElementById('comment-context-menu');
+    menu.style.display = 'none';
+    document.removeEventListener('click', hideCommentMenu);
+}
+
+function editStory() {
+    if (currentStoryId) {
+        window.location.href = `/edit_story/${currentStoryId}`;
+    }
+}
+
+function editComment() {
+    if (currentCommentId) {
+        window.location.href = `/edit_comment/${currentCommentId}`;
+    }
+}
+
+function likeStory(storyId) {
+    fetch(`/story/${storyId}/like`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`likes-${storyId}`).innerText = `${data.likes} likes`;
+                document.getElementById(`dislikes-${storyId}`).innerText = `${data.dislikes} dislikes`;
+            } else {
+                alert('Failed to like the story.');
+            }
+        });
+}
+
+function dislikeStory(storyId) {
+    fetch(`/story/${storyId}/dislike`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`likes-${storyId}`).innerText = `${data.likes} likes`;
+                document.getElementById(`dislikes-${storyId}`).innerText = `${data.dislikes} dislikes`;
+            } else {
+                alert('Failed to dislike the story.');
+            }
+        });
+}
+
+function likeComment(commentId) {
+    fetch(`/comment/${commentId}/like`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`comment-likes-${commentId}`).innerText = `${data.likes} likes`;
+                document.getElementById(`comment-dislikes-${commentId}`).innerText = `${data.dislikes} dislikes`;
+            } else {
+                alert('Failed to like the comment.');
+            }
+        });
+}
+
+function dislikeComment(commentId) {
+    fetch(`/comment/${commentId}/dislike`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`comment-likes-${commentId}`).innerText = `${data.likes} likes`;
+                document.getElementById(`comment-dislikes-${commentId}`).innerText = `${data.dislikes} dislikes`;
+            } else {
+                alert('Failed to dislike the comment.');
+            }
+        });
+}
+</script>
+{% endblock %}
+
+
