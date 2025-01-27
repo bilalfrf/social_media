@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, session
 from flask_login import LoginManager
 from config import Config

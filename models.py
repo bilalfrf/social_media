@@ -1,3 +1,4 @@
+# models.py
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
@@ -21,18 +22,21 @@ class User(UserMixin):
         self.followers = user_dict.get('followers', [])
         self.following = user_dict.get('following', [])
         self.active = user_dict.get('active', True)
+        self.is_confirmed = user_dict.get('is_confirmed', False)  # Yeni attribute
 
     @property
     def is_active(self):
         return self.active
 
     @staticmethod
-    def create_user(username, email, password):
+    def create_user(username, email, password, confirmation_code):
         password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
         user_id = mongo.db.users.insert_one({
             'username': username,
             'email': email,
             'password': password_hash,
+            'is_confirmed': False,
+            'confirmation_code': confirmation_code,
             'followers': [],
             'following': [],
             'active': True
