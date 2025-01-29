@@ -1,14 +1,13 @@
 # auth/routes.py
+import re
+import smtplib
 import uuid
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from flask import render_template, redirect, url_for, request, flash, session
 from flask_login import login_user, logout_user, login_required
 from models import User, bcrypt, mongo
 from . import auth
-import re
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
 
 def send_verification_email(email, confirmation_code):
     sender_email = "frfvipbl@gmail.com"
@@ -16,7 +15,7 @@ def send_verification_email(email, confirmation_code):
     receiver_email = email
     subject = "E-posta Doğrulama"
     body = (f"You can verify your email address by clicking on the verification link: "
-            f"http:////127.0.0.1:5000/auth/confirm-email/{confirmation_code}")
+            f"http://127.0.0.1:5000/auth/confirm-email/{confirmation_code}")
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -32,6 +31,7 @@ def send_verification_email(email, confirmation_code):
     except Exception as e:
         print(f"E-posta gönderme hatası: {str(e)}")
 
+
 def is_password_strong(password):
     # Şifre uzunluğu en az 8 karakter
     if len(password) < 8:
@@ -46,6 +46,94 @@ def is_password_strong(password):
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
         return False, "Password must include at least one special character."
     return True, None
+
+
+def send_reset_email(email, reset_code):
+    sender_email = "frfvipbl@gmail.com"
+    sender_password = "bjnk qvav uwmx styy"
+    receiver_email = email
+    subject = "Şifre Sıfırlama"
+    body = f"Click on your password reset link: http://192.168.1.106:8000/auth/reset-password/{reset_code}"
+
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, receiver_email, msg.as_string())
+        print(f"Password reset email {receiver_email} adresine gönderildi.")
+    except Exception as e:
+        print(f"Email sending error: {str(e)}")
+
+
+@auth.route('/reset-password-request', methods=['GET', 'POST'])
+def reset_password_request():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.get_user_by_email(email)
+        if user:
+            # Verification attempts kontrolü
+            if user.verification_attempts >= 4:
+                flash('Beşten fazla verification yapamazsınız.', 'danger')
+                return redirect(url_for('auth.reset_password_request'))
+
+            reset_code = str(uuid.uuid4())
+            user.update_reset_code(reset_code)
+            send_reset_email(email, reset_code)
+            user.increment_verification_attempts()  # Verification attempts artırma
+            flash('Password reset email has been sent. Please check your email.', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('Email address not found.', 'danger')
+            return redirect(url_for('auth.reset_password_request'))
+    return render_template('reset_password_request.html')
+
+
+@auth.route('/reset-password/<reset_code>', methods=['GET', 'POST'])
+def reset_password(reset_code):
+    user = User.get_user_by_reset_code(reset_code)
+    if not user:
+        flash('Invalid or expired reset code.', 'danger')
+        return redirect(url_for('auth.reset_password_request'))
+
+    if request.method == 'POST':
+        password = request.form['password']
+        is_strong, message = is_password_strong(password)
+        if not is_strong:
+            flash(message, 'danger')
+            return redirect(url_for('auth.reset_password', reset_code=reset_code))
+
+        user.set_password(password)
+        flash('Your password has been reset successfully. You can now log in.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('reset_password.html', reset_code=reset_code)
+
+
+@auth.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user = User.get_user_by_email(email)
+
+        if user:
+            if not user.is_confirmed:
+                flash('Your email address is not yet verified. Please check your email.', 'danger')
+                return redirect(url_for('auth.login'))
+
+            if bcrypt.check_password_hash(user.password, password):
+                login_user(user, remember=True)
+                session.permanent = True  # Oturumu kalıcı hale getirin
+                return redirect(url_for('main.index'))
+
+        flash('Login unsuccessful. Please check email and password', 'danger')
+
+    return render_template('login.html')
 
 
 @auth.route('/signup', methods=['GET', 'POST'])
@@ -87,9 +175,16 @@ def confirm_email(confirmation_code):
     user = mongo.db.users.find_one({'confirmation_code': confirmation_code})
 
     if user:
+        # Kullanıcı doğrulama sayısını kontrol et
+        if user.get('verification_attempts', 0) >= 4:
+            flash('Beşten fazla verification yapamazsınız.', 'danger')
+            return redirect(url_for('auth.signup'))
+
+        # Kullanıcıyı onayla
         mongo.db.users.update_one(
             {'_id': user['_id']},
-            {'$set': {'is_confirmed': True, 'confirmation_code': None}}
+            {'$set': {'is_confirmed': True, 'confirmation_code': None},
+             '$inc': {'verification_attempts': 1}}
         )
         flash('Your email address has been successfully verified! You can now log in.', 'success')
         return redirect(url_for('auth.login'))
@@ -125,5 +220,3 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
-
-

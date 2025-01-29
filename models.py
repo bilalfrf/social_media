@@ -22,7 +22,9 @@ class User(UserMixin):
         self.followers = user_dict.get('followers', [])
         self.following = user_dict.get('following', [])
         self.active = user_dict.get('active', True)
-        self.is_confirmed = user_dict.get('is_confirmed', False)  # Yeni attribute
+        self.is_confirmed = user_dict.get('is_confirmed', False)
+        self.verification_attempts = user_dict.get('verification_attempts', 0)
+        self.reset_code = user_dict.get('reset_code', None)  # Yeni attribute
 
     @property
     def is_active(self):
@@ -37,6 +39,8 @@ class User(UserMixin):
             'password': password_hash,
             'is_confirmed': False,
             'confirmation_code': confirmation_code,
+            'verification_attempts': 0,
+            'reset_code': None,  # Başlangıçta None
             'followers': [],
             'following': [],
             'active': True
@@ -49,6 +53,27 @@ class User(UserMixin):
         if user_dict:
             return User(user_dict)
         return None
+
+    @staticmethod
+    def get_user_by_reset_code(reset_code):
+        user_dict = mongo.db.users.find_one({'reset_code': reset_code})
+        if user_dict:
+            return User(user_dict)
+        return None
+
+    def update_reset_code(self, reset_code):
+        mongo.db.users.update_one({'_id': ObjectId(self.id)}, {'$set': {'reset_code': reset_code}})
+        self.reset_code = reset_code
+
+    def increment_verification_attempts(self):
+        mongo.db.users.update_one({'_id': ObjectId(self.id)}, {'$inc': {'verification_attempts': 1}})
+        self.verification_attempts += 1
+
+    def set_password(self, password):
+        password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        mongo.db.users.update_one({'_id': ObjectId(self.id)}, {'$set': {'password': password_hash, 'reset_code': None}})
+        self.password = password_hash
+        self.reset_code = None
 
     @staticmethod
     def get_user_by_id(user_id):
