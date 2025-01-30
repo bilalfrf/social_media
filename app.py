@@ -7,6 +7,7 @@ from auth import auth as auth_blueprint
 from main import main as main_blueprint
 from datetime import timedelta
 
+
 app = Flask(__name__)
 app.config.from_object(Config)
 

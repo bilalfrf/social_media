@@ -53,7 +53,7 @@ def send_reset_email(email, reset_code):
     sender_password = "bjnk qvav uwmx styy"
     receiver_email = email
     subject = "Şifre Sıfırlama"
-    body = f"Click on your password reset link: http://192.168.1.106:8000/auth/reset-password/{reset_code}"
+    body = f"Click on your password reset link: http://127.0.0.1:5000/auth/reset-password/{reset_code}"
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -76,15 +76,9 @@ def reset_password_request():
         email = request.form['email']
         user = User.get_user_by_email(email)
         if user:
-            # Verification attempts kontrolü
-            if user.verification_attempts >= 4:
-                flash('Beşten fazla verification yapamazsınız.', 'danger')
-                return redirect(url_for('auth.reset_password_request'))
-
             reset_code = str(uuid.uuid4())
             user.update_reset_code(reset_code)
             send_reset_email(email, reset_code)
-            user.increment_verification_attempts()  # Verification attempts artırma
             flash('Password reset email has been sent. Please check your email.', 'success')
             return redirect(url_for('auth.login'))
         else:
@@ -112,28 +106,6 @@ def reset_password(reset_code):
         return redirect(url_for('auth.login'))
 
     return render_template('reset_password.html', reset_code=reset_code)
-
-
-@auth.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        user = User.get_user_by_email(email)
-
-        if user:
-            if not user.is_confirmed:
-                flash('Your email address is not yet verified. Please check your email.', 'danger')
-                return redirect(url_for('auth.login'))
-
-            if bcrypt.check_password_hash(user.password, password):
-                login_user(user, remember=True)
-                session.permanent = True  # Oturumu kalıcı hale getirin
-                return redirect(url_for('main.index'))
-
-        flash('Login unsuccessful. Please check email and password', 'danger')
-
-    return render_template('login.html')
 
 
 @auth.route('/signup', methods=['GET', 'POST'])
