@@ -20,7 +20,7 @@ login_manager.login_view = 'auth.login'
 def load_user(user_id):
     return User.get_user_by_id(user_id)
 
-# Oturum süresini ayarlayın
+# na estaso pa kholake khute darkawım
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
 app.config['SESSION_COOKIE_SECURE'] = False  # HTTPS kullanıyorsanız True yapın
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365)
@@ -32,7 +32,7 @@ def make_session_permanent():
 app.register_blueprint(auth_blueprint, url_prefix='/auth')
 app.register_blueprint(main_blueprint)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=True)
 
 

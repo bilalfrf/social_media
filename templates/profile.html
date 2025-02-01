@@ -23,6 +23,10 @@
                 <li>{{ following.username }}</li>
             {% endfor %}
         </ul>
+        <!-- Delete Account Button -->
+        <form method="GET" action="{{ url_for('auth.delete_account') }}">
+            <button type="submit" class="btn btn-danger">Delete Account</button>
+        </form>
     </div>
 </div>
 {% endblock %}

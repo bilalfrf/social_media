@@ -36,12 +36,16 @@ def edit_story(story_id):
                 flash('Unsupported media type', 'danger')
                 return redirect(url_for('main.stories'))
 
-            mongo.db.stories.update_one({'_id': ObjectId(story_id)}, {'$set': {'media': filename, 'media_type': media_type}})
+            mongo.db.stories.update_one(
+                {'_id': ObjectId(story_id)},
+                {'$set': {'media': filename, 'media_type': media_type}}
+            )
 
         flash('Story updated successfully!', 'success')
         return redirect(url_for('main.stories'))
 
     return render_template('edit_story.html', story=story)
+
 
 @main.route('/edit_comment/<comment_id>', methods=['GET', 'POST'])
 @login_required
@@ -67,6 +71,40 @@ def edit_comment(comment_id):
             return redirect(url_for('main.stories'))
 
     return render_template('edit_comment.html', comment=comment)
+
+
+@main.route('/delete_story/<story_id>', methods=['POST'])
+@login_required
+def delete_story(story_id):
+    story = mongo.db.stories.find_one({'_id': ObjectId(story_id)})
+    if not story or story['user_id'] != current_user.id:
+        flash('You are not authorized to delete this story.', 'danger')
+        return redirect(url_for('main.stories'))
+
+    mongo.db.stories.delete_one({'_id': ObjectId(story_id)})
+    flash('Story deleted successfully!', 'success')
+    return redirect(url_for('main.stories'))
+
+
+@main.route('/delete_comment/<comment_id>', methods=['POST'])
+@login_required
+def delete_comment(comment_id):
+    story = mongo.db.stories.find_one({'comments._id': ObjectId(comment_id)})
+    if not story:
+        flash('Comment not found.', 'danger')
+        return redirect(url_for('main.stories'))
+
+    comment = next((c for c in story['comments'] if c['_id'] == ObjectId(comment_id)), None)
+    if not comment or comment['user_id'] != current_user.id:
+        flash('You are not authorized to delete this comment.', 'danger')
+        return redirect(url_for('main.stories'))
+
+    mongo.db.stories.update_one(
+        {'comments._id': ObjectId(comment_id)},
+        {'$pull': {'comments': {'_id': ObjectId(comment_id)}}}
+    )
+    flash('Comment deleted successfully!', 'success')
+    return redirect(url_for('main.stories'))
 
 
 @main.route('/stories', methods=['GET'])
@@ -127,12 +165,15 @@ def like_story(story_id):
     if story:
         user_id = current_user.id
         if user_id not in story.get('user_likes', []):
-            mongo.db.stories.update_one({'_id': ObjectId(story_id)}, {'$inc': {'likes': 1}, '$addToSet': {'user_likes': user_id}})
+            mongo.db.stories.update_one({'_id': ObjectId(story_id)},
+                                        {'$inc': {'likes': 1}, '$addToSet': {'user_likes': user_id}})
             if user_id in story.get('user_dislikes', []):
-                mongo.db.stories.update_one({'_id': ObjectId(story_id)}, {'$inc': {'dislikes': -1}, '$pull': {'user_dislikes': user_id}})
+                mongo.db.stories.update_one({'_id': ObjectId(story_id)},
+                                            {'$inc': {'dislikes': -1}, '$pull': {'user_dislikes': user_id}})
             flash('Story liked!', 'success')
         else:
-            mongo.db.stories.update_one({'_id': ObjectId(story_id)}, {'$inc': {'likes': -1}, '$pull': {'user_likes': user_id}})
+            mongo.db.stories.update_one({'_id': ObjectId(story_id)},
+                                        {'$inc': {'likes': -1}, '$pull': {'user_likes': user_id}})
             flash('Like removed!', 'success')
 
         story = mongo.db.stories.find_one({'_id': ObjectId(story_id)})
@@ -146,17 +187,19 @@ def dislike_story(story_id):
     if story:
         user_id = current_user.id
         if user_id not in story.get('user_dislikes', []):
-            mongo.db.stories.update_one({'_id': ObjectId(story_id)}, {'$inc': {'dislikes': 1}, '$addToSet': {'user_dislikes': user_id}})
+            mongo.db.stories.update_one({'_id': ObjectId(story_id)},
+                                        {'$inc': {'dislikes': 1}, '$addToSet': {'user_dislikes': user_id}})
             if user_id in story.get('user_likes', []):
-                mongo.db.stories.update_one({'_id': ObjectId(story_id)}, {'$inc': {'likes': -1}, '$pull': {'user_likes': user_id}})
+                mongo.db.stories.update_one({'_id': ObjectId(story_id)},
+                                            {'$inc': {'likes': -1}, '$pull': {'user_likes': user_id}})
             flash('Story disliked!', 'success')
         else:
-            mongo.db.stories.update_one({'_id': ObjectId(story_id)}, {'$inc': {'dislikes': -1}, '$pull': {'user_dislikes': user_id}})
+            mongo.db.stories.update_one({'_id': ObjectId(story_id)},
+                                        {'$inc': {'dislikes': -1}, '$pull': {'user_dislikes': user_id}})
             flash('Dislike removed!', 'success')
 
         story = mongo.db.stories.find_one({'_id': ObjectId(story_id)})
         return jsonify(success=True, likes=story['likes'], dislikes=story['dislikes'])
-
 
 
 @main.route('/story/<story_id>/comment', methods=['POST'])
@@ -264,6 +307,7 @@ def dislike_comment(comment_id):
             if comment['_id'] == ObjectId(comment_id):
                 return jsonify(success=True, likes=comment['likes'], dislikes=comment['dislikes'])
 
+
 @main.route('/follow/<user_id>', methods=['POST'])
 @login_required
 def follow_user(user_id):
@@ -330,9 +374,8 @@ def profile():
                            following_count=following_count, stories_count=stories_count, followers=followers,
                            followings=followings)
 
+
 @main.route('/profiles')
 def profiles():
     users = mongo.db.users.find()
     return render_template('profiles.html', users=users)
-
-

@@ -4,8 +4,10 @@ import smtplib
 import uuid
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+from bson import ObjectId
 from flask import render_template, redirect, url_for, request, flash, session
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from models import User, bcrypt, mongo
 from . import auth
 
@@ -15,7 +17,7 @@ def send_verification_email(email, confirmation_code):
     receiver_email = email
     subject = "E-posta Doğrulama"
     body = (f"You can verify your email address by clicking on the verification link: "
-            f"http://127.0.0.1:5000/auth/confirm-email/{confirmation_code}")
+            f"http://192.168.1.8:8000/auth/confirm-email/{confirmation_code}")
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -53,7 +55,7 @@ def send_reset_email(email, reset_code):
     sender_password = "bjnk qvav uwmx styy"
     receiver_email = email
     subject = "Şifre Sıfırlama"
-    body = f"Click on your password reset link: http://127.0.0.1:5000/auth/reset-password/{reset_code}"
+    body = f"Click on your password reset link: http://192.168.1.8:8000/auth/reset-password/{reset_code}"
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -186,6 +188,24 @@ def login():
 
     return render_template('login.html')
 
+
+@auth.route('/delete_account', methods=['GET', 'POST'])
+@login_required
+def delete_account():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        if email != current_user.email:
+            flash('The email address you entered is incorrect.', 'danger')
+            return redirect(url_for('main.profile'))
+
+        # Kullanıcıyı ve ilişkili verileri sil
+        mongo.db.users.delete_one({'_id': ObjectId(current_user.id)})
+        mongo.db.stories.delete_many({'user_id': current_user.id})
+        logout_user()
+        flash('Your account has been deleted successfully.', 'success')
+        return redirect(url_for('main.index'))
+
+    return render_template('delete_account.html')
 
 @auth.route('/logout')
 @login_required

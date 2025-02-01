@@ -42,6 +42,11 @@
                         <div>
                             <button class="btn btn-success btn-sm" onclick="likeStory('{{ story._id }}')">Like</button>
                             <button class="btn btn-danger btn-sm" onclick="dislikeStory('{{ story._id }}')">Dislike</button>
+                            {% if story.user_id == current_user.id %}
+                            <form method="POST" action="{{ url_for('main.delete_story', story_id=story._id) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete Story</button>
+                            </form>
+                            {% endif %}
                         </div>
                         <small id="likes-{{ story._id }}">{{ story.likes }} likes</small>,
                         <small id="dislikes-{{ story._id }}">{{ story.dislikes }} dislikes</small>
@@ -63,9 +68,14 @@
                             <div>
                                 <button class="btn btn-success btn-sm" onclick="likeComment('{{ comment._id }}')">Like</button>
                                 <button class="btn btn-danger btn-sm" onclick="dislikeComment('{{ comment._id }}')">Dislike</button>
-                                <small id="comment-likes-{{ comment._id }}">{{ comment.likes }} likes</small>,
-                                <small id="comment-dislikes-{{ comment._id }}">{{ comment.dislikes }} dislikes</small>
+                                {% if comment.user_id == current_user.id %}
+                                <form method="POST" action="{{ url_for('main.delete_comment', comment_id=comment._id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete Comment</button>
+                                </form>
+                                {% endif %}
                             </div>
+                            <small id="comment-likes-{{ comment._id }}">{{ comment.likes }} likes</small>,
+                            <small id="comment-dislikes-{{ comment._id }}">{{ comment.dislikes }} dislikes</small>
                         </div>
                         {% endfor %}
                     </div>

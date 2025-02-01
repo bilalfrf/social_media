@@ -12,13 +12,11 @@
                 <textarea class="form-control" id="story_content" name="story_content" rows="3" required>{{ story.content }}</textarea>
             </div>
             <div class="form-group">
-                <label for="story_image">Story Image</label>
-                <input type="file" class="form-control-file" id="story_image" name="story_image">
+                <label for="story_media">Story Media (Photo or Video)</label>
+                <input type="file" class="form-control-file" id="story_media" name="story_media" accept="image/*,video/*">
             </div>
             <button type="submit" class="btn btn-primary">Update Story</button>
         </form>
     </div>
 </div>
 {% endblock %}
-
-
