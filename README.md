@@ -1,70 +1,69 @@
 Web Sitesinin Ne İşe Yaradığı:
 Yukarıda verdiğiniz kodlar, Flask framework'ü kullanılarak geliştirilmiş bir sosyal medya uygulamasını temsil ediyor. Bu uygulama, kullanıcıların aşağıdaki işlemleri yapmasına olanak tanır:
 
-Hesap Oluşturma ve Giriş Yapma:
+### Hesap Oluşturma ve Giriş Yapma:
 
-Kullanıcılar, e-posta adresleri ve şifreleriyle kayıt olabilir.
+- Kullanıcılar, e-posta adresleri ve şifreleriyle kayıt olabilir.
 
-Kayıt olduktan sonra e-posta doğrulaması yapılır.
+- Kayıt olduktan sonra e-posta doğrulaması yapılır.
 
-Şifre sıfırlama işlevi mevcuttur.
+- Şifre sıfırlama işlevi mevcuttur.
 
-Hikaye (Story) Paylaşma:
+### Hikaye (Story) Paylaşma:
 
-Kullanıcılar metin, fotoğraf veya video içeren hikayeler paylaşabilir.
+- Kullanıcılar metin, fotoğraf veya video içeren hikayeler paylaşabilir.
 
-Paylaşılan hikayeler düzenlenebilir veya silinebilir.
+- Paylaşılan hikayeler düzenlenebilir veya silinebilir.
 
-Beğenme ve Yorum Yapma:
+- Beğenme ve Yorum Yapma:
 
-Kullanıcılar, hikayeleri beğenebilir veya beğenmeyebilir.
+- Kullanıcılar, hikayeleri beğenebilir veya beğenmeyebilir.
 
-Hikayelere yorum yapabilir ve yorumları beğenebilir veya beğenmeyebilir.
+- Hikayelere yorum yapabilir ve yorumları beğenebilir veya beğenmeyebilir.
 
-Takip Etme ve Takipçi Yönetimi:
+### Takip Etme ve Takipçi Yönetimi:
 
-Kullanıcılar birbirlerini takip edebilir veya takibi bırakabilir.
+- Kullanıcılar birbirlerini takip edebilir veya takibi bırakabilir.
 
-Profil sayfalarında takipçi ve takip edilen kişi listeleri görüntülenebilir.
+- Profil sayfalarında takipçi ve takip edilen kişi listeleri görüntülenebilir.
 
-Profil Yönetimi:
+### Profil Yönetimi:
 
-Kullanıcılar, kendi profillerini görüntüleyebilir ve düzenleyebilir.
+- Kullanıcılar, kendi profillerini görüntüleyebilir ve düzenleyebilir.
 
-Diğer kullanıcıların profillerini ziyaret edebilir.
+- Diğer kullanıcıların profillerini ziyaret edebilir.
 
-Güvenlik ve Doğrulama:
+### Güvenlik ve Doğrulama:
 
-Şifreler güçlü şifre politikasına uygun olmalıdır.
+- Şifreler güçlü şifre politikasına uygun olmalıdır.
 
-E-posta doğrulama ve şifre sıfırlama işlemleri mevcuttur.
+- E-posta doğrulama ve şifre sıfırlama işlemleri mevcuttur.
 
-Hangi Programlama Dilleri ve Teknolojiler Kullanıldı?
-Bu proje, aşağıdaki programlama dilleri ve teknolojiler kullanılarak geliştirilmiştir:
+### 
+- Hangi Programlama Dilleri ve Teknolojiler Kullanıldı?
+### Bu proje, aşağıdaki programlama dilleri ve teknolojiler kullanılarak geliştirilmiştir:
 
-Python:
+- Python:
 
-Flask: Web uygulamasının temel framework'ü.
+- Flask: Web uygulamasının temel framework'ü.
 
-Flask-Login: Kullanıcı oturum yönetimi için kullanıldı.
+- Flask-Login: Kullanıcı oturum yönetimi için kullanıldı.
 
-Flask-PyMongo: MongoDB veritabanı bağlantısı için kullanıldı.
+- Flask-PyMongo: MongoDB veritabanı bağlantısı için kullanıldı.
 
-Flask-Bcrypt: Şifrelerin hash'lenmesi için kullanıldı.
+- Flask-Bcrypt: Şifrelerin hash'lenmesi için kullanıldı.
 
-MongoDB:
+- MongoDB: Veritabanı olarak MongoDB kullanıldı. Kullanıcı bilgileri, hikayeler, yorumlar ve beğeniler burada saklanır.
 
-Veritabanı olarak MongoDB kullanıldı. Kullanıcı bilgileri, hikayeler, yorumlar ve beğeniler burada saklanır.
+- HTML/CSS/JavaScript:
 
-HTML/CSS/JavaScript:
+- HTML: Web sayfalarının yapısını oluşturmak için kullanıldı.
 
-HTML: Web sayfalarının yapısını oluşturmak için kullanıldı.
+- CSS: Bootstrap kütüphanesi kullanılarak sayfaların stilini belirlemek için kullanıldı.
 
-CSS: Bootstrap kütüphanesi kullanılarak sayfaların stilini belirlemek için kullanıldı.
+- JavaScript: Dinamik işlevler (beğenme, yorum yapma, hikaye düzenleme vb.) için kullanıldı.
 
-JavaScript: Dinamik işlevler (beğenme, yorum yapma, hikaye düzenleme vb.) için kullanıldı.
-
-Jinja2:
+- Jinja2:
 
 Flask ile birlikte kullanılan bir template engine. HTML sayfalarına dinamik veri eklemek için kullanıldı.
 
