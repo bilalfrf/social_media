@@ -1,164 +1,136 @@
-Web Sitesinin Ne İşe Yaradığı:
-Yukarıda verdiğiniz kodlar, Flask framework'ü kullanılarak geliştirilmiş bir sosyal medya uygulamasını temsil ediyor. Bu uygulama, kullanıcıların aşağıdaki işlemleri yapmasına olanak tanır:
+# Sosyal Medya Uygulaması
 
-### Hesap Oluşturma ve Giriş Yapma:
+Bu proje, **Flask** framework'ü kullanarak geliştirilmiş temel bir sosyal medya uygulamasıdır. Kullanıcılar, hikayeler paylaşabilir, birbirlerini takip edebilir, beğenme/yorum yapabilir ve profillerini yönetebilir. Ayrıca, güvenlik önlemleri (şifre sıfırlama, e-posta doğrulama) ve kullanıcı deneyimi iyileştirmeleri de eklenmiştir.
 
-- Kullanıcılar, e-posta adresleri ve şifreleriyle kayıt olabilir.
+---
 
-- Kayıt olduktan sonra e-posta doğrulaması yapılır.
+## İçerik
 
+1. [Uygulama Özellikleri](#uygulama-özellikleri)
+2. [Kullanılan Teknolojiler](#kullanılan-teknolojiler)
+3. [Kod Yapısı](#kod-yapısı)
+4. [Çalışma Mantığı](#çalışma-mantığı)
+5. [Kurulum ve Kullanım](#kurulum-ve-kullanım)
+
+---
+
+## Uygulama Özellikleri
+
+Bu uygulama kullanıcıların aşağıdaki işlemleri gerçekleştirmesine olanak tanır:
+
+### 1. Hesap Oluşturma ve Giriş Yapma:
+- Kullanıcılar, **e-posta adresleri** ve **şifreleri**yle kayıt olabilir.
+- Kayıt olduktan sonra **e-posta doğrulaması** yapılır.
 - Şifre sıfırlama işlevi mevcuttur.
 
-### Hikaye (Story) Paylaşma:
+### 2. Hikaye (Story) Paylaşma:
+- Kullanıcılar **metin, fotoğraf** veya **video** içeren hikayeler paylaşabilir.
+- Paylaşılan hikayeler **düzenlenebilir** veya **silinebilir**.
 
-- Kullanıcılar metin, fotoğraf veya video içeren hikayeler paylaşabilir.
+### 3. Beğenme ve Yorum Yapma:
+- Kullanıcılar, hikayelere **beğenme** ve **yorum yapma** işlemleri gerçekleştirebilir.
+- Yorumlar **beğenilebilir** veya **beğenilmeyebilir**.
 
-- Paylaşılan hikayeler düzenlenebilir veya silinebilir.
+### 4. Takip Etme ve Takipçi Yönetimi:
+- Kullanıcılar birbirlerini **takip edebilir** veya **takipten çıkabilir**.
+- **Profil sayfalarında** takipçi ve takip edilen kişi listeleri görüntülenebilir.
 
-- Beğenme ve Yorum Yapma:
-
-- Kullanıcılar, hikayeleri beğenebilir veya beğenmeyebilir.
-
-- Hikayelere yorum yapabilir ve yorumları beğenebilir veya beğenmeyebilir.
-
-### Takip Etme ve Takipçi Yönetimi:
-
-- Kullanıcılar birbirlerini takip edebilir veya takibi bırakabilir.
-
-- Profil sayfalarında takipçi ve takip edilen kişi listeleri görüntülenebilir.
-
-### Profil Yönetimi:
-
-- Kullanıcılar, kendi profillerini görüntüleyebilir ve düzenleyebilir.
-
+### 5. Profil Yönetimi:
+- Kullanıcılar, kendi profillerini **görüntüleyebilir** ve **düzenleyebilir**.
 - Diğer kullanıcıların profillerini ziyaret edebilir.
 
-### Güvenlik ve Doğrulama:
+### 6. Güvenlik ve Doğrulama:
+- **Şifreler**, güçlü şifre politikasına uygun olmalıdır.
+- **E-posta doğrulama** ve **şifre sıfırlama** işlemleri mevcuttur.
 
-- Şifreler güçlü şifre politikasına uygun olmalıdır.
+---
 
-- E-posta doğrulama ve şifre sıfırlama işlemleri mevcuttur.
+## Kullanılan Teknolojiler
 
-### 
-- Hangi Programlama Dilleri ve Teknolojiler Kullanıldı?
-### Bu proje, aşağıdaki programlama dilleri ve teknolojiler kullanılarak geliştirilmiştir:
+Bu proje, aşağıdaki teknolojiler ve kütüphaneler kullanılarak geliştirilmiştir:
 
-- Python:
+- **Python**: Flask uygulamasının yazılım dili.
+- **Flask**: Web framework.
+- **Flask-Login**: Kullanıcı oturum yönetimi.
+- **Flask-PyMongo**: MongoDB veritabanı bağlantısı.
+- **Flask-Bcrypt**: Şifrelerin güvenli bir şekilde hash'lenmesi.
+- **MongoDB**: Veritabanı olarak MongoDB kullanılmıştır.
+- **HTML**: Web sayfalarının yapısı.
+- **CSS**: Sayfaların stilini belirlemek için **Bootstrap** kullanıldı.
+- **JavaScript**: Dinamik işlevler için kullanıldı.
+- **Jinja2**: Flask ile dinamik içerik yerleştirmek için kullanıldı.
+- **SMTP**: E-posta gönderme işlevselliği için kullanıldı (Gmail SMTP sunucusu).
 
-- Flask: Web uygulamasının temel framework'ü.
+---
 
-- Flask-Login: Kullanıcı oturum yönetimi için kullanıldı.
+## Kod Yapısı
 
-- Flask-PyMongo: MongoDB veritabanı bağlantısı için kullanıldı.
+### 1. `app.py` (Ana Uygulama Dosyası):
+- Flask uygulamasının temel yapılandırmalarını içerir.
+- **Blueprint'ler**: `auth` (kimlik doğrulama) ve `main` (ana işlevler) olarak ayrılmıştır.
+- **Oturum Yönetimi**: Kullanıcı oturumlarının yönetimi yapılır.
+- **MongoDB ve Bcrypt Başlatma**: Veritabanı ve şifre hash'leme işlemleri başlatılır.
 
-- Flask-Bcrypt: Şifrelerin hash'lenmesi için kullanıldı.
+### 2. `config.py` (Yapılandırma Dosyası):
+- Gizli anahtar (`SECRET_KEY`) ve MongoDB bağlantı URI'si gibi yapılandırma bilgilerini içerir.
 
-- MongoDB: Veritabanı olarak MongoDB kullanıldı. Kullanıcı bilgileri, hikayeler, yorumlar ve beğeniler burada saklanır.
+### 3. `models.py` (Veritabanı Modelleri):
+- **User** sınıfı: Kullanıcı bilgilerini ve işlevlerini yönetir (şifre hash'leme, e-posta doğrulama, takip etme).
+- MongoDB işlemleri: Kullanıcı oluşturma, güncelleme, silme ve sorgulama işlemleri yapılır.
 
-- HTML/CSS/JavaScript:
+### 4. `auth/routes.py` (Kimlik Doğrulama İşlemleri):
+- **Kayıt Olma**: Kullanıcıların kaydını ve e-posta doğrulamasını yönetir.
+- **Giriş Yapma**: Kullanıcıların giriş yapmasını sağlar.
+- **Şifre Sıfırlama**: Kullanıcıların şifrelerini sıfırlamasına olanak tanır.
+- **E-posta Doğrulama**: E-posta doğrulama işlemleri yapılır.
 
-- HTML: Web sayfalarının yapısını oluşturmak için kullanıldı.
+### 5. `main/routes.py` (Ana İşlevler):
+- **Hikaye Yönetimi**: Kullanıcıların hikaye eklemesi, düzenlemesi ve silinmesi sağlanır.
+- **Beğenme ve Yorum Yapma**: Hikayeleri ve yorumları beğenme işlemi yapılır.
+- **Takip Etme**: Kullanıcıların birbirini takip etmesi sağlanır.
+- **Profil Yönetimi**: Kullanıcı profillerinin düzenlenmesi sağlanır.
 
-- CSS: Bootstrap kütüphanesi kullanılarak sayfaların stilini belirlemek için kullanıldı.
+### 6. HTML Şablonları:
+- `base.html`: Tüm sayfalar için temel şablon.
+- `login.html`, `signup.html`: Kullanıcı girişi ve kaydolma sayfaları.
+- `story.html`: Hikayelerin listelendiği ve yeni hikayelerin eklenebileceği sayfa.
+- `profile.html`: Kullanıcı profillerinin görüntülendiği sayfa.
+- `edit_story.html`, `edit_comment.html`: Hikaye ve yorum düzenleme sayfaları.
 
-- JavaScript: Dinamik işlevler (beğenme, yorum yapma, hikaye düzenleme vb.) için kullanıldı.
+### 7. JavaScript İşlevleri:
+- **Beğenme/Beğenmeme**: Hikayeler ve yorumlar için dinamik işlevsellik.
+- **Bağlam Menüsü**: Sağ tıklama ile hikaye ve yorum düzenleme seçenekleri.
 
-- Jinja2:
+### 8. Veritabanı Güncelleme Scriptleri:
+- `update_comments.py`: Yorumların benzersiz kimlikler (ID) ile güncellenmesini sağlar.
+- `update_likes_dislikes.py`: Beğenilerin ve beğenmeyenlerin sayısal değerlere dönüştürülmesini sağlar.
 
-Flask ile birlikte kullanılan bir template engine. HTML sayfalarına dinamik veri eklemek için kullanıldı.
+---
 
-SMTP (E-posta Gönderme):
+## Çalışma Mantığı
 
-Kullanıcı kaydı ve şifre sıfırlama işlemleri için e-posta gönderme işlevselliği eklendi. Gmail SMTP sunucusu kullanıldı.
+### 1. Kullanıcı Kaydı ve Girişi:
+- Kullanıcı kaydolurken **e-posta doğrulaması** yapılır.
+- Giriş yaparken **şifre hash'leri** karşılaştırılır.
 
-Kodların Ne Yaptığı (Detaylı Açıklama):
-1. app.py (Ana Uygulama Dosyası):
-Flask uygulamasının ana yapılandırmasını içerir.
+### 2. Hikaye Paylaşma ve Yönetme:
+- Kullanıcılar **metin, fotoğraf** veya **video** içeren hikayeler paylaşabilir.
+- Hikayeler **düzenlenebilir** ve **silinebilir**.
 
-Blueprint'ler: auth (kimlik doğrulama) ve main (ana işlevler) olmak üzere iki blueprint kullanıldı.
+### 3. Beğenme ve Yorum Yapma:
+- Kullanıcılar, hikayeleri ve yorumları **beğenebilir** veya **beğenmeyebilir**.
+- **Beğeniler** ve **yorumlar** dinamik olarak güncellenir.
 
-Oturum Yönetimi: Kullanıcı oturumlarının süresi ve güvenliği ayarlandı.
+### 4. Takip Etme ve Profil Yönetimi:
+- Kullanıcılar birbirlerini **takip edebilir** veya **takipten çıkabilir**.
+- **Profil sayfalarında** takipçi ve takip edilen kişi listeleri görüntülenebilir.
 
-MongoDB ve Bcrypt Başlatma: Veritabanı ve şifre hash'leme işlemleri için gerekli yapılandırmalar yapıldı.
+### 5. Güvenlik:
+- **Şifreler** güçlü şifre politikasına uygun olmalıdır.
+- **E-posta doğrulama** ve **şifre sıfırlama** işlemleri mevcuttur.
 
-2. config.py (Yapılandırma Dosyası):
-Uygulamanın gizli anahtarı (SECRET_KEY) ve MongoDB bağlantı URI'si gibi yapılandırma bilgilerini içerir.
+---
 
-3. models.py (Veritabanı Modelleri):
-User Sınıfı: Kullanıcı bilgilerini ve işlevlerini (şifre hash'leme, e-posta doğrulama, takip etme vb.) yönetir.
+## Kurulum ve Kullanım
 
-MongoDB İşlemleri: Kullanıcı oluşturma, güncelleme, silme ve sorgulama işlemleri burada tanımlandı.
 
-4. auth/routes.py (Kimlik Doğrulama İşlemleri):
-Kayıt Olma: Kullanıcıların kaydolmasını ve e-posta doğrulamasını yönetir.
-
-Giriş Yapma: Kullanıcıların giriş yapmasını ve oturum açmasını sağlar.
-
-Şifre Sıfırlama: Kullanıcıların şifrelerini sıfırlamasına olanak tanır.
-
-E-posta Doğrulama: Kullanıcıların e-posta adreslerini doğrulamasını sağlar.
-
-5. main/routes.py (Ana İşlevler):
-Hikaye Yönetimi: Kullanıcıların hikaye eklemesini, düzenlemesini ve silmesini sağlar.
-
-Beğenme ve Yorum Yapma: Kullanıcıların hikayeleri ve yorumları beğenmesini veya beğenmemesini sağlar.
-
-Takip Etme: Kullanıcıların birbirlerini takip etmesini sağlar.
-
-Profil Yönetimi: Kullanıcı profillerinin görüntülenmesini ve düzenlenmesini sağlar.
-
-6. HTML Şablonları:
-base.html: Tüm sayfalar için ortak bir temel şablon.
-
-login.html, signup.html: Kullanıcı girişi ve kaydolma sayfaları.
-
-story.html: Hikayelerin listelendiği ve yeni hikayelerin eklendiği sayfa.
-
-profile.html: Kullanıcı profillerinin görüntülendiği sayfa.
-
-edit_story.html, edit_comment.html: Hikaye ve yorum düzenleme sayfaları.
-
-7. JavaScript İşlevleri:
-Beğenme/Beğenmeme: Hikayeler ve yorumlar için beğenme/beğenmeme işlevselliği.
-
-Bağlam Menüsü: Sağ tıklama ile hikaye ve yorum düzenleme seçenekleri.
-
-8. Veritabanı Güncelleme Scriptleri:
-update_comments.py: Yorumların benzersiz kimlikler (ID) ile güncellenmesini sağlar.
-
-update_likes_dislikes.py: Beğenilerin ve beğenmeyenlerin sayısal değerlere dönüştürülmesini sağlar.
-
-Genel Çalışma Mantığı:
-Kullanıcı Kaydı ve Girişi:
-
-Kullanıcı kaydolurken e-posta doğrulaması yapılır.
-
-Giriş yaparken şifre hash'leri karşılaştırılır.
-
-Hikaye Paylaşma ve Yönetme:
-
-Kullanıcılar metin, fotoğraf veya video içeren hikayeler paylaşabilir.
-
-Hikayeler düzenlenebilir veya silinebilir.
-
-Beğenme ve Yorum Yapma:
-
-Kullanıcılar hikayeleri ve yorumları beğenebilir veya beğenmeyebilir.
-
-Beğeniler ve yorumlar dinamik olarak güncellenir.
-
-Takip Etme ve Profil Yönetimi:
-
-Kullanıcılar birbirlerini takip edebilir veya takibi bırakabilir.
-
-Profil sayfalarında takipçi ve takip edilen kişi listeleri görüntülenebilir.
-
-Güvenlik:
-
-Şifreler güçlü şifre politikasına uygun olmalıdır.
-
-E-posta doğrulama ve şifre sıfırlama işlemleri mevcuttur.
-
-Sonuç:
-Bu proje, Flask ve MongoDB kullanılarak geliştirilmiş temel bir sosyal medya uygulamasıdır. Kullanıcıların hikayeler paylaşmasına, birbirlerini takip etmesine ve etkileşimde bulunmasına
-olanak tanır. Ayrıca, güvenlik ve kullanıcı deneyimi için çeşitli işlevler (e-posta doğrulama, şifre sıfırlama, beğenme/yorum yapma) eklenmişti
