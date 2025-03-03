@@ -133,4 +133,6 @@ Bu proje, aşağıdaki teknolojiler ve kütüphaneler kullanılarak geliştirilm
 
 ## Kurulum ve Kullanım
 
-
+### Gerekli Kütüphaneler:
+```bash
+pip install flask flask-login flask-pymongo flask-bcrypt
