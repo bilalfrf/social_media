@@ -137,6 +137,7 @@ Bu proje, aşağıdaki teknolojiler ve kütüphaneler kullanılarak geliştirilm
 ### Gerekli Kütüphaneler:
 ```bash
 pip install flask flask-login flask-pymongo flask-bcrypt
+```
 
 # English Section
 
